@@ -1,3 +1,12 @@
+/* This script will batch-convert to .tif every .czi file in all subfolders of the folder you specify (interactively).
+ * Only series_1 will be converted.
+ * Contrast is enhanced with 5% saturation before saving.
+ * Images are saved as 8-bit.
+ * 
+ * written by Paola Patella, PhD. 
+ * FMI, Basel, March 2021
+ */
+ 
 run("Bio-Formats Macro Extensions");
 setBatchMode(true);
 

@@ -7,6 +7,7 @@
  * written by Paola Patella, PhD. 
  * FMI, Basel, March 2021
  */
+ 
 run("Bio-Formats Macro Extensions");
 setBatchMode(true);
 
