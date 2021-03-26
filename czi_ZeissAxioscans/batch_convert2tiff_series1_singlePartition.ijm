@@ -35,25 +35,31 @@ processFiles(dir);
 
   function processFile(path) {
        if (endsWith(path, ".czi")) {
-
        		appendingSt = ".tif";
-			run("Bio-Formats Importer", "open=[&path] color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT series_1");
-				seriesNumber = 1; //not used because for simplicity I just wrote the number in the command above
-       			
-			
-			getDimensions(width, height, channels, slices, frames);
-			// if it's a multi channel image
-			if (channels > 1) run("Split Channels");
 
-			for ( c = 1; c <= channels; c++){
-				selectImage(c);
-				run("Enhance Contrast", "saturated=0.05");
-			}
-			run("Images to Stack", "name=Stack title=[] use");
-			run("8-bit");
-
-			filenameWrite = path+seriesNumber+appendingSt;
-			saveAs("Tiff", filenameWrite);
-			close();
+			seriesNumber = 1;
+			seriesLabel = "series_"+seriesNumber;
+       		print("opening " + seriesLabel);   
+       		openingString = "open=" +path +" color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel;
+       		//print(openingString);
+       		run("Bio-Formats Importer", openingString);
+       		saveTiff(path, seriesNumber, appendingSt);
       }
+  }
+
+function saveTiff(path, seriesNumber, appendingSt) {
+	getDimensions(width, height, channels, slices, frames);
+	// if it's a multi channel image
+	if (channels > 1) run("Split Channels");
+
+	for ( c = 1; c <= channels; c++){
+		selectImage(c);
+		run("Enhance Contrast", "saturated=0.05");
+	}
+	run("Images to Stack", "name=Stack title=[] use");
+	run("8-bit");
+
+	filenameWrite = path+seriesNumber+appendingSt;
+	saveAs("Tiff", filenameWrite);
+	close();
   }
