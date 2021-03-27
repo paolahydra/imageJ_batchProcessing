@@ -49,8 +49,9 @@ processFiles(dir);
        		Ext.getSeriesCount(seriesCount); //zero-based
        		print("series count = " + seriesCount);
 
-
-       		appendingSt = ".tif";
+			Ext.getMetadataValue("Scaling|Distance|Value #1", value);
+			print(value);
+       		appendingSt = "_" +value+ "umppx.tif";
 
        		seriesNumber = 1;
        		Ext.setSeries(0); //note that the index in this case is zero-based. This corresponds to series 1.
