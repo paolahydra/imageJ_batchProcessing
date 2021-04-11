@@ -11,7 +11,7 @@ blackCH = 2; % this channel will become black over white background
 
 redCH = 1; % this channel will become red over white background
 greenCH = 3; % use zero if you don't want any data shown in this channel
-blueCH = 2;  % use zero if you don't want any data shown in this channel
+blueCH = 0;  % use zero if you don't want any data shown in this channel
 
 % note that you may have to adjust values in the stretchlim function (for
 % each channel) depending on the quality of your own image
