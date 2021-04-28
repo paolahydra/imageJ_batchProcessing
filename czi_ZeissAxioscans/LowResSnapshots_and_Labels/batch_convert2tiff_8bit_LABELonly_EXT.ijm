@@ -1,7 +1,8 @@
 run("Bio-Formats Macro Extensions");
 setBatchMode(true);
 
-dir = getDirectory("Choose a Directory ");
+//dir = getDirectory("Choose a Directory ");
+dir = "/Volumes/arber.s.m.drive/patepaol/axioscans/EnvA populations projecting to LatRM/20210412"
 count = 0;
 countFiles(dir);
 print("files to process = " + count);
@@ -34,7 +35,7 @@ processFiles(dir);
   }
 
   function processFile(path) {
-  	   appendingSt = "label.tif";
+  	   appendingSt = "label.jpg";
        if (endsWith(path, ".czi")) {
 			Ext.setId(path);
        		Ext.getSeriesCount(seriesCount); //zero-based
