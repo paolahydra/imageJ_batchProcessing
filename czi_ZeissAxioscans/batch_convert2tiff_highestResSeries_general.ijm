@@ -51,6 +51,8 @@ processFiles(dir);
 
 			Ext.getMetadataValue("Scaling|Distance|Value #1", value);
 			print(value);
+
+		value = 1000000*value;
        		appendingSt = "_" +value+ "umppx.tif";
 
        		seriesNumber = 1;
