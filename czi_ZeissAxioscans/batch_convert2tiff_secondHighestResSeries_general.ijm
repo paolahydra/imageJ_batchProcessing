@@ -51,7 +51,6 @@ processFiles(dir);
 
 		Ext.getMetadataValue("Scaling|Distance|Value #1", value);
 		print(value);
-       		// appendingSt = "_" +value+ "mmppx.tif";
 
        		seriesNumber = 1;
        		Ext.setSeries(0); //note that the index in this case is zero-based. This corresponds to series 1.
@@ -59,10 +58,10 @@ processFiles(dir);
 		Ext.getSizeY(prevSizeY);
 		Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
 		Ext.getSizeX(seriestwoX);
-		downsamplingFactor = seriestwoX/prevSizeX;
-		value = value/downsamplingFactor;
+		invDownsamplingFactor = prevSizeX/seriestwoX;
+		value = invDownsamplingFactor*1000000*value;
 			
-		appendingSt = "_" +value+ "mmppx.tif";
+		appendingSt = "_" +value+ "umppx.tif";
 			
 		Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
 		seriesNumberUse = seriesNumber+1;
