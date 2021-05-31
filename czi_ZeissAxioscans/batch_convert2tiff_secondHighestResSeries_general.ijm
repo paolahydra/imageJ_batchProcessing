@@ -45,27 +45,26 @@ processFiles(dir);
 
   function processFile(path) {
        if (endsWith(path, ".czi")) {
-			Ext.setId(path);
+		Ext.setId(path);
        		Ext.getSeriesCount(seriesCount); //zero-based
        		print("series count = " + seriesCount);
 
-			Ext.getMetadataValue("Scaling|Distance|Value #1", value);
-			print(value);
-       		appendingSt = "_" +value+ "umppx.tif";
+		Ext.getMetadataValue("Scaling|Distance|Value #1", value);
+		print(value);
 
        		seriesNumber = 1;
        		Ext.setSeries(0); //note that the index in this case is zero-based. This corresponds to series 1.
-			Ext.getSizeX(prevSizeX);
-			Ext.getSizeY(prevSizeY);
-			Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
-			Ext.getSizeX(seriestwoX);
-			downsamplingFactor = seriestwoX/prevSizeX;
-			value = downsamplingFactor*value;
+		Ext.getSizeX(prevSizeX);
+		Ext.getSizeY(prevSizeY);
+		Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
+		Ext.getSizeX(seriestwoX);
+		invDownsamplingFactor = prevSizeX/seriestwoX;
+		value = invDownsamplingFactor*1000000*value;
 			
-			appendingSt = "_" +value+ "umppx.tif";
+		appendingSt = "_" +value+ "umppx.tif";
 			
-			Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
-			seriesNumberUse = seriesNumber+1;
+		Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
+		seriesNumberUse = seriesNumber+1;
        		seriesLabel = "series_"+seriesNumberUse;
        		print("opening " + seriesLabel);   
        		openingString = "open=" +path +" color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel;
@@ -75,29 +74,29 @@ processFiles(dir);
 			
 			
 			
-			for (seriesNumber=2; seriesNumber<=seriesCount-2; seriesNumber++) {
-				//print(seriesNumber);
-				Ext.setSeries(seriesNumber-1);
-				Ext.getSizeX(sizeX);
-				Ext.getSizeY(sizeY);
-				prevsz = prevSizeX*prevSizeY;
-				currsz = sizeX*sizeY;
-				//print("previous squaresize: " +prevsz );
-				//print("current squaresize: " +currsz );
-				if (prevsz < currsz) {
-					// get the next downsampled one then
-					Ext.setSeries(seriesNumber); // this is zero-based
-					seriesNumberUse = seriesNumber+1;
-					seriesLabel = "series_"+seriesNumberUse;
-       				print("opening " + seriesLabel);   
-					openingString = "open=[&path] color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel; 
+		for (seriesNumber=2; seriesNumber<=seriesCount-2; seriesNumber++) {
+			//print(seriesNumber);
+			Ext.setSeries(seriesNumber-1);
+			Ext.getSizeX(sizeX);
+			Ext.getSizeY(sizeY);
+			prevsz = prevSizeX*prevSizeY;
+			currsz = sizeX*sizeY;
+			//print("previous squaresize: " +prevsz );
+			//print("current squaresize: " +currsz );
+			if (prevsz < currsz) {
+				// get the next downsampled one then
+				Ext.setSeries(seriesNumber); // this is zero-based
+				seriesNumberUse = seriesNumber+1;
+				seriesLabel = "series_"+seriesNumberUse;
+   				print("opening " + seriesLabel);   
+				openingString = "open=[&path] color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel; 
        				//print(openingString);
        				run("Bio-Formats Importer", openingString);
        				saveTiff(path, seriesNumberUse, appendingSt);
-				}
-				prevSizeX = sizeX;
-				prevSizeY = sizeY;
-			}				
+			}
+			prevSizeX = sizeX;
+			prevSizeY = sizeY;
+		}				
       }
   }
 

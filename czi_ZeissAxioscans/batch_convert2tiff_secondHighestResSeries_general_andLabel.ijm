@@ -52,19 +52,25 @@ processFiles(dir);
 			Ext.getMetadataValue("Scaling|Distance|Value #1", value);
 			print(value);
 
-		value = 1000000*value;
-       		appendingSt = "_" +value+ "umppx.tif";
-
        		seriesNumber = 1;
        		Ext.setSeries(0); //note that the index in this case is zero-based. This corresponds to series 1.
 			Ext.getSizeX(prevSizeX);
 			Ext.getSizeY(prevSizeY);
-       		seriesLabel = "series_"+seriesNumber;
+			Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
+			Ext.getSizeX(seriestwoX);
+			invDownsamplingFactor = prevSizeX/seriestwoX;
+			value = invDownsamplingFactor*1000000*value;
+			
+			appendingSt = "_" +value+ "umppx.tif";
+			
+			Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
+			seriesNumberUse = seriesNumber+1;
+       		seriesLabel = "series_"+seriesNumberUse;
        		print("opening " + seriesLabel);   
        		openingString = "open=" +path +" color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel;
        		//print(openingString);
        		run("Bio-Formats Importer", openingString);
-       		saveTiff(path, seriesNumber, appendingSt);
+       		saveTiff(path, seriesNumberUse, appendingSt);
 			
 			
 			
@@ -78,16 +84,31 @@ processFiles(dir);
 				//print("previous squaresize: " +prevsz );
 				//print("current squaresize: " +currsz );
 				if (prevsz < currsz) {
-					seriesLabel = "series_"+seriesNumber;
+					// get the next downsampled one then
+					Ext.setSeries(seriesNumber); // this is zero-based
+					seriesNumberUse = seriesNumber+1;
+					seriesLabel = "series_"+seriesNumberUse;
        				print("opening " + seriesLabel);   
 					openingString = "open=[&path] color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel; 
        				//print(openingString);
        				run("Bio-Formats Importer", openingString);
-       				saveTiff(path, seriesNumber, appendingSt);
+       				saveTiff(path, seriesNumberUse, appendingSt);
 				}
 				prevSizeX = sizeX;
 				prevSizeY = sizeY;
-			}				
+			}	
+
+			// also save the label, which is always the second to last
+			appendingSt = "label.jpg";
+			seriesNumberUse = seriesCount-1;
+			seriesLabel = "series_"+seriesNumberUse;
+       		print("opening " + seriesLabel);   
+			openingString = "open=[&path] color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel; 
+       		run("Bio-Formats Importer", openingString);
+			run("8-bit");
+			filenameWrite = path+appendingSt;
+			saveAs("Jpeg", filenameWrite);
+			close();
       }
   }
 
