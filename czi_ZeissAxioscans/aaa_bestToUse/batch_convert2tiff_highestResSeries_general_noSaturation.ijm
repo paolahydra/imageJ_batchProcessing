@@ -1,7 +1,6 @@
 /* This script will batch-convert to .tif every .czi file in all subfolders of the folder you specify (interactively).
  * Only the highest-resolution series (the first series and any other first ones if acquisition was split in several parts)
  * will be converted.
- * Contrast is enhanced with 5% saturation before saving.
  * Images are saved as 8-bit.
  * 
  * written by Paola Patella, PhD. 
@@ -51,26 +50,20 @@ processFiles(dir);
 
 			Ext.getMetadataValue("Scaling|Distance|Value #1", value);
 			print(value);
+			
+       		value = 1000000*value;
+       		appendingSt = "_" +value+ "umppx.tif";
 
        		seriesNumber = 1;
        		Ext.setSeries(0); //note that the index in this case is zero-based. This corresponds to series 1.
 			Ext.getSizeX(prevSizeX);
 			Ext.getSizeY(prevSizeY);
-			Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
-			Ext.getSizeX(seriestwoX);
-			invDownsamplingFactor = prevSizeX/seriestwoX;
-			value = invDownsamplingFactor*1000000*value;
-			
-			appendingSt = "_" +value+ "umppx.tif";
-			
-			Ext.setSeries(1); //note that the index in this case is zero-based. This corresponds to series 2.
-			seriesNumberUse = seriesNumber+1;
-       		seriesLabel = "series_"+seriesNumberUse;
+       		seriesLabel = "series_"+seriesNumber;
        		print("opening " + seriesLabel);   
        		openingString = "open=" +path +" color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel;
        		//print(openingString);
        		run("Bio-Formats Importer", openingString);
-       		saveTiff(path, seriesNumberUse, appendingSt);
+       		saveTiff(path, seriesNumber, appendingSt);
 			
 			
 			
@@ -84,15 +77,12 @@ processFiles(dir);
 				//print("previous squaresize: " +prevsz );
 				//print("current squaresize: " +currsz );
 				if (prevsz < currsz) {
-					// get the next downsampled one then
-					Ext.setSeries(seriesNumber); // this is zero-based
-					seriesNumberUse = seriesNumber+1;
-					seriesLabel = "series_"+seriesNumberUse;
+					seriesLabel = "series_"+seriesNumber;
        				print("opening " + seriesLabel);   
 					openingString = "open=[&path] color_mode=Default rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT " +seriesLabel; 
        				//print(openingString);
        				run("Bio-Formats Importer", openingString);
-       				saveTiff(path, seriesNumberUse, appendingSt);
+       				saveTiff(path, seriesNumber, appendingSt);
 				}
 				prevSizeX = sizeX;
 				prevSizeY = sizeY;
@@ -104,7 +94,7 @@ processFiles(dir);
 	getDimensions(width, height, channels, slices, frames);
 	// if it's a multi channel image
 	if (channels > 1) run("Split Channels");
-
+	
 	/* no saturation at all!! better results with cell body detections
 	for ( c = 1; c <= channels; c++){
 		selectImage(c);
