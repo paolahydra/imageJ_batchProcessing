@@ -8,7 +8,7 @@ print("files to process = " + count);
 
 n = 0;
 processFiles(dir);
-print("Done.");
+
    
    function countFiles(dir) {
       list = getFileList(dir);
@@ -24,12 +24,9 @@ print("Done.");
       list = getFileList(dir);
       for (i=0; i<list.length; i++) {
       	print(i);
-          if (endsWith(list[i], "/")){
-          		// print("folder");
+          if (endsWith(list[i], "/"))
               processFiles(""+dir+list[i]);
-          }
           else {
-          	//print("not a folder");
              showProgress(n++, count);
              path = dir+list[i];
              processFile(path);
@@ -38,15 +35,30 @@ print("Done.");
   }
 
 	function processFile(path) {
-       if (endsWith(path, ".tif")) {
+       if ((endsWith(path, ".tif")) || (endsWith(path, ".tiff")) ) {
 			open(path);
 			appendingSt = ".png";
+			
+			getDimensions(width, height, channels, slices, frames);
 
-			//makeRectangle(0, 70, 2059, 2934);
-			//Crop...
-			run("Split Channels");
-
-
+			
+			if (channels==1){  // if it is a stack
+				// only keep the first three channels, if more are available
+				if (slices==4){
+					setSlice(4);
+					run("Delete Slice");
+				}
+				run("Stack to RGB");
+				run("Split Channels");
+			}
+			else {  //it is a multichannel image
+				run("Split Channels");
+				if (channels==4){
+					close(); // this will close the last channel
+				}
+			}
+			
+			// channel-by-channel operations and saving 
 			run("Invert");
 			//run("Enhance Contrast", "saturated=0.05");
 			fname = getTitle();
