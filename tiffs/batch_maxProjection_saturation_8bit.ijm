@@ -1,17 +1,3 @@
-/* This script will batch-downsample every .tif(f) file in all subfolders of the folder you specify (interactively).
- * Images are also reduced to 8-bit.
- * 
- * written by Paola Patella, PhD. 
- * FMI, Basel, July 2021
- */
-
-
-// specify your settings here:
-scaleFactor = 0.75;
-overwrite = 0;
- 
-
-
 // don't need to change anything below
 setBatchMode(true);
 
@@ -51,13 +37,14 @@ processFiles(dir);
        if ((endsWith(path, ".tif")) || (endsWith(path, ".tiff")) ) {
 			open(path);
 			
+			run("Z Project...", "projection=[Max Intensity]");
+			
        		getDimensions(width, height, channels, slices, frames);
-			newWidth = round(width*scaleFactor);
-			newHeight = round(height*scaleFactor);
-			runningString = "x=" +scaleFactor +" y=" +scaleFactor +" z=1.0 width=" +newWidth +" height=" +newHeight +" depth=" +slices +" interpolation=Bicubic average process create";
-       		print(runningString);
-       		
-			run("Scale...", runningString);
+			for ( c = 1; c <= channels; c++){
+				Stack.setChannel(c) 
+				run("Enhance Contrast", "saturated=0.03");
+			}
+			
 			run("8-bit");
 
 			if (overwrite == 1)
@@ -65,10 +52,9 @@ processFiles(dir);
 			else {
 				folderpath = File.getParent(path) + File.separator;
 				filename = File.getName(path);
-				filenameWrite = folderpath + "downsampled-" + scaleFactor + "_" + filename;
+				filenameWrite = folderpath + "MAX_" + filename;
 				}
 			saveAs("Tiff", filenameWrite);
 			run("Close All");
        }
   }
-
