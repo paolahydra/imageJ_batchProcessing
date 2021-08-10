@@ -47,13 +47,11 @@ processFiles(dir);
 			
 			run("8-bit");
 
-			if (overwrite == 1)
-				filenameWrite = path;
-			else {
-				folderpath = File.getParent(path) + File.separator;
-				filename = File.getName(path);
-				filenameWrite = folderpath + "MAX_" + filename;
-				}
+			
+			folderpath = File.getParent(path) + File.separator;
+			filename = File.getName(path);
+			filenameWrite = folderpath + "MAX_" + filename;
+
 			saveAs("Tiff", filenameWrite);
 			run("Close All");
        }
