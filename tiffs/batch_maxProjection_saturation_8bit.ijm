@@ -42,7 +42,7 @@ processFiles(dir);
        		getDimensions(width, height, channels, slices, frames);
 			for ( c = 1; c <= channels; c++){
 				Stack.setChannel(c) 
-				run("Enhance Contrast", "saturated=0.03");
+				run("Enhance Contrast", "saturated=0.25");
 			}
 			
 			run("8-bit");
