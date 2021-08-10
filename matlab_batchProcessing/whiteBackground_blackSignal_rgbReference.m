@@ -9,8 +9,8 @@
 %% define output channels
 blackCH = 2; % this channel will become black over white background
 
-redCH = 1; % this channel will become red over white background
-greenCH = 3; % use zero if you don't want any data shown in this channel
+redCH = 3; % this channel will become red over white background
+greenCH = 0; % use zero if you don't want any data shown in this channel
 blueCH = 0;  % use zero if you don't want any data shown in this channel
 
 % note that you may have to adjust values in the stretchlim function (for
@@ -18,25 +18,34 @@ blueCH = 0;  % use zero if you don't want any data shown in this channel
 
 
 %% interactively select files to process
-imagefiles = uipickfiles('Output', 'struct');
-
+% imagefiles = uipickfiles('Output', 'struct');
+[file,path] = uigetfile('*.*');
 
 %% do it
-for i = 1:length(imagefiles)
-    fname_original = imagefiles(i).name;
-    extension_i = strfind(imagefiles(i).name, '.');
+% for i = 1:length(imagefiles)
+%     fname_original = imagefiles(i).name;
+fname_original = fullfile(path, file);
+    extension_i = strfind(fname_original, '.');
     assert(~isempty(extension_i),'Is the file extension not specified?')
     extension_i = extension_i(end);
     fname_2save = [fname_original(1:extension_i-1), '_blackred', fname_original(extension_i:end)];
        
     %% load image
+    INFO = imfinfo(fname_original);
+    
     cdata = imread(fname_original); 
+    if size(cdata,3)~=length(INFO)
+        for c = 1:length(INFO)
+            cdata(:,:,c) = imread(fname_original,c);
+        end
+    end
     if ~isa(cdata, 'uint8')
         cdata = im2uint8(cdata);
     end
     clear newcdata
     
     %% split in channels
+    clear ch
     for c = 1:size(cdata,3)
         ch(c).data = cdata(:,:,c);
     end
@@ -44,7 +53,7 @@ for i = 1:length(imagefiles)
     
     %% convert black channel
     im = ch(blackCH).data;
-    lowhigh = stretchlim(im, [0.2 0.9999]); % saturate the white a bit. Check that the values suit your images
+    lowhigh = stretchlim(im, [0.7 0.9999]); % saturate the white a bit. Check that the values suit your images
     im = imadjust(im,lowhigh);
     
     black_b = repmat(im,1,1,3);
@@ -75,5 +84,5 @@ for i = 1:length(imagefiles)
     
     %% save image
     imwrite(M, fname_2save);
-end
+% end
 

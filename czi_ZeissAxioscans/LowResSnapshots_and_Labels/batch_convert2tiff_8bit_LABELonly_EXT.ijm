@@ -34,7 +34,7 @@ processFiles(dir);
   }
 
   function processFile(path) {
-  	   appendingSt = "label.tif";
+  	   appendingSt = "lab.jpg";
        if (endsWith(path, ".czi")) {
 			Ext.setId(path);
        		Ext.getSeriesCount(seriesCount); //zero-based
