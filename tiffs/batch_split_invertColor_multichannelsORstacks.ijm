@@ -24,45 +24,37 @@ processFiles(dir);
       list = getFileList(dir);
       for (i=0; i<list.length; i++) {
       	print(i);
-          if (endsWith(list[i], "/"))
-              processFiles(""+dir+list[i]);
-          else {
+          if (endsWith(list[i], ".tif")) {
              showProgress(n++, count);
              path = dir+list[i];
-             processFile(path);
+             processFile(path, dir);
           }
       }
   }
 
-	function processFile(path) {
+	function processFile(path, dir) {
        if ((endsWith(path, ".tif")) || (endsWith(path, ".tiff")) ) {
 			open(path);
-			appendingSt = ".png";
+			suffixSt = "INV_";
+			
 			
 			getDimensions(width, height, channels, slices, frames);
-
-			
-			if (channels==1){  // if it is a stack
-				// only keep the first three channels, if more are available
-				if (slices==4){
-					setSlice(4);
-					run("Delete Slice");
-				}
-				run("Stack to RGB");
+			if (channels==2){
 				run("Split Channels");
-			}
-			else {  //it is a multichannel image
-				run("Split Channels");
-				if (channels==4){
-					close(); // this will close the last channel
-				}
-			}
+			}	
 			
-			// channel-by-channel operations and saving 
 			run("Invert");
-			//run("Enhance Contrast", "saturated=0.05");
+			run("Enhance Contrast", "saturated=0.25");
+			
 			fname = getTitle();
+			
+			
+			filenameWrite = dir+suffixSt+fname;
+			print(filenameWrite);
+			saveAs("TIFF", filenameWrite);
 
+			run("Close All");
+/*
 			filenameWrite = dir+fname+appendingSt;
 			print(filenameWrite);
 			saveAs("PNG", filenameWrite);
@@ -80,7 +72,8 @@ processFiles(dir);
 			fname = getTitle();
 			filenameWrite = dir+fname+appendingSt;
 			saveAs("PNG", filenameWrite);
-			close();
+			close();*/
+			
        }
 	}
 	
